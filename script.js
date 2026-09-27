@@ -77,54 +77,13 @@ if (parallaxLayers.length && !window.matchMedia('(prefers-reduced-motion: reduce
   }, { passive: true });
 }
 
-// --- Photo upload slots (used for founder photos + product cards) ---
-// Stores images as base64 in localStorage per slot id, so uploads persist
-// in the visitor's / editor's own browser without needing a backend.
-document.querySelectorAll('.upload-slot[data-slot-id]').forEach(slot => {
-  const id = 'tx-photo-' + slot.dataset.slotId;
-  const input = slot.querySelector('input[type="file"]');
-  const img = slot.querySelector('img');
-  const removeBtn = slot.querySelector('.remove-btn');
-
-  function setImage(src) {
-    if (!img) return;
-    img.src = src;
-    slot.classList.add('has-image');
-  }
-  function clearImage() {
-    if (img) img.removeAttribute('src');
-    slot.classList.remove('has-image');
-  }
-
-  try {
-    const saved = localStorage.getItem(id);
-    if (saved) setImage(saved);
-  } catch (e) {}
-
-  if (input) {
-    input.addEventListener('change', () => {
-      const file = input.files && input.files[0];
-      if (!file) return;
-      if (!file.type.startsWith('image/')) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const dataUrl = e.target.result;
-        setImage(dataUrl);
-        try { localStorage.setItem(id, dataUrl); } catch (err) {}
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
-  if (removeBtn) {
-    removeBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      clearImage();
-      try { localStorage.removeItem(id); } catch (err) {}
-      if (input) input.value = '';
-    });
-  }
+// --- Photo slots ---
+// Photos are now fixed image files (assets/founder-main.jpg, assets/product-1.jpg, etc).
+// Only whoever can push files to the project's GitHub repo can change them —
+// visitors cannot upload or alter photos on the live site.
+document.querySelectorAll('.upload-slot.photo-fixed img').forEach(img => {
+  if (img.complete && img.naturalWidth > 0) img.closest('.upload-slot').classList.add('has-image');
+  img.addEventListener('load', () => img.closest('.upload-slot').classList.add('has-image'));
 });
 
 // --- Product filter bar (Products page) ---

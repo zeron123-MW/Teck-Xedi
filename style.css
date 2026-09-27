@@ -75,7 +75,7 @@ section{padding:120px 0;}
 :root[data-theme="dark"] .nav{background:rgba(10,18,32,0.75);}
 .nav.scrolled{border-bottom-color:var(--border); box-shadow:var(--shadow-sm);}
 .nav-logo{display:flex; align-items:center; gap:10px;}
-.nav-logo img{height:34px; width:auto;}
+.nav-logo img, .nav-logo svg{height:34px; width:auto;}
 .nav-links{display:flex; align-items:center; gap:36px; list-style:none; margin:0; padding:0;}
 .nav-links a{font-weight:600; font-size:15px; color:var(--text); position:relative; padding:6px 0;}
 .nav-links a::after{content:''; position:absolute; left:0; bottom:0; height:2px; width:0; background:var(--gold); transition:width .25s var(--ease);}
@@ -160,6 +160,11 @@ section{padding:120px 0;}
 .upload-slot.has-image .upload-label, .upload-slot.has-image svg{display:none;}
 .upload-slot .remove-btn{position:absolute; top:8px; right:8px; z-index:2; width:26px; height:26px; border-radius:50%; background:rgba(0,0,0,0.6); color:#fff; display:none; align-items:center; justify-content:center; font-size:14px;}
 .upload-slot.has-image .remove-btn{display:flex;}
+/* Fixed, owner-only photo slots: image is set by file name, not by visitors */
+.upload-slot.photo-fixed{cursor:default;}
+.upload-slot.photo-fixed input{display:none;}
+.upload-slot.photo-fixed img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1;}
+.nav-logo .logo-mark, .footer-brand .logo-mark{display:block;}
 
 .hero-scroll{position:absolute; bottom:34px; left:32px; display:flex; align-items:center; gap:10px; color:rgba(255,255,255,0.55); font-size:13px;}
 .hero-scroll .dot{width:8px; height:8px; border-radius:50%; border:1.5px solid rgba(255,255,255,0.5); animation:pulse 2s infinite;}
