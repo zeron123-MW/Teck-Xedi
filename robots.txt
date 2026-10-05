@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://zeron123-mw.github.io/Teck-Xedi/sitemap.xml
