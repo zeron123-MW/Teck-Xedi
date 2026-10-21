@@ -358,3 +358,63 @@ section{padding:120px 0;}
   .portrait-frame{transition:none !important;}
   *{scroll-behavior:auto !important;}
 }
+/* =========================================================
+   MOBILE FIX PATCH — paste at the very BOTTOM of style.css
+   ========================================================= */
+
+/* 1. Desktop: the mobile-menu-only button must stay hidden */
+.nav-links .nav-cta-mobile{display:none;}
+
+@media (max-width:900px){
+
+  /* 2. Navbar: compact, nothing overflows, menu button always visible */
+  .nav{padding:10px 16px;}
+  .nav .nav-cta{display:none;}               /* big gold button moves into the menu */
+  .nav-right{gap:8px;}
+  .theme-toggle{width:44px;height:44px;}
+  .nav-toggle{width:44px;height:44px;align-items:center;justify-content:center;}
+  .nav-toggle span{width:22px;}
+  .nav-logo svg,.nav-logo img{height:30px;}
+
+  /* 3. Dropdown menu sits exactly under the navbar, with a proper gold button */
+  .nav-links{position:absolute;top:100%;left:0;right:0;}
+  .nav-links .nav-cta-mobile{display:block;border-bottom:none;}
+  .nav-links .nav-cta-mobile a{display:flex;justify-content:center;padding:14px 24px;margin:14px 0 4px;color:var(--navy);}
+  .nav-links .nav-cta-mobile a::after{display:none;}
+
+  /* 4. Hero: a tidy photo collage instead of overlapping floating photos */
+  .hero{min-height:auto;padding:96px 0 56px;}
+  .hero-scroll{display:none;}
+  .hero-visual{height:auto;max-width:440px;margin:32px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .portrait-frame{position:relative !important;inset:auto !important;width:100% !important;transform:none !important;}
+  .portrait-frame.p1{grid-column:1 / -1;}
+  .portrait-frame.p1 .upload-slot{aspect-ratio:1/1;}
+  .portrait-frame.p2 .upload-slot,
+  .portrait-frame.p3 .upload-slot{aspect-ratio:4/5;}
+  .portrait-frame img{object-position:center 30%;}   /* keeps faces in frame */
+
+  /* 5. Tighter spacing on phones */
+  section{padding:56px 0;}
+  .products-hero{padding:120px 0 48px;}
+  .products-hero .quote{text-align:left;max-width:none;}
+  .contact-hero{padding:120px 0 56px;}
+  .contact-hero-visual{max-width:340px;}
+  .contact-hero-visual .upload-slot{aspect-ratio:1/1;}
+  .challenge-card{padding:26px;}
+  .form-card{padding:24px;}
+  .cta-band{padding:56px 0;}
+  .footer-links{gap:36px;}
+
+  /* 6. Product filter becomes a swipeable single row */
+  .filter-bar{flex-wrap:nowrap;overflow-x:auto;margin:-30px -20px 36px;padding:0 20px 8px;scrollbar-width:none;}
+  .filter-bar::-webkit-scrollbar{display:none;}
+  .filter-bar button{flex:0 0 auto;}
+
+  /* 7. 16px inputs stop iPhones from zooming in when you tap a field */
+  .field input,.field select,.field textarea{font-size:16px;}
+}
+
+@media (max-width:480px){
+  .hero-stats{gap:20px;flex-wrap:wrap;}
+  .btn{padding:13px 22px;}
+}
