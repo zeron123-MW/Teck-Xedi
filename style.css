@@ -418,3 +418,38 @@ section{padding:120px 0;}
   .hero-stats{gap:20px;flex-wrap:wrap;}
   .btn{padding:13px 22px;}
 }
+/* =========================================================
+   SUPPORT SPLIT — contact page (talk to me + Cursor AI)
+   ========================================================= */
+.support-split{background:var(--bg);}
+.support-head{max-width:760px;margin-bottom:44px;}
+.support-head h2{font-size:clamp(26px,3.4vw,40px);margin-bottom:14px;}
+.support-head p{font-size:16px;}
+
+.support-grid{display:grid;grid-template-columns:1fr 1fr;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);}
+.support-box{padding:44px 40px;display:flex;flex-direction:column;gap:16px;}
+.support-box h3{font-size:22px;}
+
+.support-direct{background:var(--surface);}
+.support-cursor{background:linear-gradient(160deg,var(--navy),var(--navy-deep));}
+.support-cursor h3{color:#fff;}
+.support-cursor p{color:rgba(255,255,255,0.78);}
+
+.support-actions{display:flex;gap:12px;flex-wrap:wrap;}
+.support-small{font-size:14px;margin-top:auto;}
+
+.cursor-brand{display:flex;align-items:center;gap:12px;}
+.cursor-brand strong{display:block;font-family:'Montserrat',sans-serif;font-size:18px;color:#fff;}
+.cursor-brand span{font-size:13px;color:rgba(255,255,255,0.65);}
+
+.pay-guide{margin-top:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:var(--radius-sm);padding:4px 18px 8px;}
+.pay-guide summary{cursor:pointer;font-weight:700;padding:12px 0;color:var(--gold);}
+.pay-guide ol{margin:4px 0 14px;padding-left:20px;display:flex;flex-direction:column;gap:12px;color:rgba(255,255,255,0.88);font-size:14.5px;line-height:1.6;}
+.pay-guide li::marker{color:var(--gold);font-weight:700;}
+.pay-guide a{color:var(--gold);text-decoration:underline;}
+.pay-note{font-size:13px;border-left:3px solid var(--gold);padding-left:12px;color:rgba(255,255,255,0.75);}
+
+@media (max-width:900px){
+  .support-grid{grid-template-columns:1fr;}
+  .support-box{padding:30px 22px;}
+}
