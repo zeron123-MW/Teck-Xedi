@@ -60,38 +60,30 @@
           <div><strong>Millions</strong><span>Lives to Impact</span></div>
         </div>
       </div>
-      <div class="hero-visual">
-        <div class="portrait-frame p1" data-parallax="-0.12">
-          <div class="upload-slot photo-fixed">
-            <img src="assets/founder-1.jpg" alt="Gilbert Zeron Banda, founder of Teck Xedi" loading="lazy" onerror="this.style.display='none'">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.2"/><path d="M8 6l1.4-2h5.2L16 6"/></svg>
-          </div>
-        </div>
-        <div class="portrait-frame p2" data-parallax="0.16">
-          <div class="upload-slot photo-fixed">
-            <img src="assets/founder-2.jpg" alt="Gilbert Zeron Banda" loading="lazy" onerror="this.style.display='none'">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.2"/><path d="M8 6l1.4-2h5.2L16 6"/></svg>
-          </div>
-        </div>
-        <div class="portrait-frame p3" data-parallax="-0.2">
-          <div class="upload-slot photo-fixed">
-            <img src="assets/founder-3.jpg" alt="Gilbert Zeron Banda" loading="lazy" onerror="this.style.display='none'">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.2"/><path d="M8 6l1.4-2h5.2L16 6"/></svg>
-          </div>
+           <!-- HERO PANEL: replaces the three floating photos (photos now live in the Founder slideshow) -->
+      <div class="hero-panel">
+        <div class="hero-panel-card">
+          <p class="hero-panel-label">TECK XEDI AT A GLANCE</p>
+          <ul>
+            <li><span class="hp-num">01</span><div><strong>Ideas</strong><span>Real problems, turned into innovative ideas.</span></div></li>
+            <li><span class="hp-num">02</span><div><strong>Apps</strong><span>Practical, scalable software.</span></div></li>
+            <li><span class="hp-num">03</span><div><strong>Impact</strong><span>Technology that improves lives.</span></div></li>
+          </ul>
         </div>
       </div>
     </div>
-    <div class="hero-scroll"><span class="dot"></span> Scroll to explore</div>
   </section>
 
   <!-- ============ FOUNDER ============ -->
   <section class="founder-section">
-    <div class="container founder reveal">
-      <div class="founder-photo">
-        <div class="upload-slot photo-fixed">
-            <img src="assets/founder-main.jpg" alt="Gilbert Zeron Banda" loading="lazy" onerror="this.style.display='none'">
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.2"/><path d="M8 6l1.4-2h5.2L16 6"/></svg>
-          </div>
+           <!-- FOUNDER SLIDESHOW: photos pop in one at a time, then loop. To reorder, move the <figure> lines. -->
+        <div class="founder-slideshow" id="founder-slideshow" role="group" aria-roledescription="carousel" aria-label="Photos of Gilbert Zeron Banda">
+          <figure class="slide is-active"><img src="assets/founder-main.jpg" alt="Gilbert Zeron Banda, founder of Teck Xedi"></figure>
+          <figure class="slide"><img src="assets/founder-1.jpg" alt="Gilbert Zeron Banda"></figure>
+          <figure class="slide"><img src="assets/founder-2.jpg" alt="Gilbert Zeron Banda"></figure>
+          <figure class="slide"><img src="assets/founder-3.jpg" alt="Gilbert Zeron Banda"></figure>
+          <div class="slide-dots" aria-label="Choose a photo"></div>
+        </di> 
         <div class="founder-quote">"everything is possible if you have an infinite mindset, as humans it is our duty to develop the infinite mindset which is a muscle."<span>Gilbert Zeron Banda</span></div>
       </div>
       <div>
