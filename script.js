@@ -134,3 +134,78 @@ if (contactForm) {
 
 // --- Footer year ---
 document.querySelectorAll('.js-year').forEach(el => { el.textContent = new Date().getFullYear(); });
+// --- Founder photo slideshow: one photo pops in at a time, then loops ---
+(function () {
+  const root = document.getElementById('founder-slideshow');
+  if (!root) return;
+
+  const dotsWrap = root.querySelector('.slide-dots');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const INTERVAL = 3500; // milliseconds each photo stays on screen
+  let slides = Array.from(root.querySelectorAll('.slide'));
+  let index = 0, timer = null, inView = false, paused = false;
+
+  function show(i) {
+    if (!slides.length) return;
+    index = (i + slides.length) % slides.length;
+    slides.forEach((s, k) => s.classList.toggle('is-active', k === index));
+    Array.from(dotsWrap.children).forEach((d, k) => {
+      d.classList.toggle('active', k === index);
+      d.setAttribute('aria-current', k === index ? 'true' : 'false');
+    });
+  }
+
+  function buildDots() {
+    dotsWrap.innerHTML = '';
+    slides.forEach((s, k) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-label', 'Show photo ' + (k + 1) + ' of ' + slides.length);
+      b.addEventListener('click', () => { show(k); restart(); });
+      dotsWrap.appendChild(b);
+    });
+    dotsWrap.style.display = slides.length > 1 ? 'flex' : 'none';
+  }
+
+  function stop() { clearInterval(timer); timer = null; }
+  function start() {
+    if (reduceMotion || timer || paused || !inView || slides.length < 2) return;
+    timer = setInterval(() => show(index + 1), INTERVAL);
+  }
+  function restart() { stop(); start(); }
+
+  // If a photo file is missing or misnamed, skip it instead of showing a broken image
+  function dropSlide(slide) {
+    slides = slides.filter(s => s !== slide);
+    slide.remove();
+    buildDots(); show(index); restart();
+  }
+  slides.slice().forEach(slide => {
+    const img = slide.querySelector('img');
+    if (!img) return;
+    if (img.complete && img.naturalWidth === 0) {
+      slides = slides.filter(s => s !== slide);
+      slide.remove();
+    } else {
+      img.addEventListener('error', () => dropSlide(slide));
+    }
+  });
+  buildDots();
+  show(0);
+
+  // Pause while someone hovers (mouse) or focuses the slideshow
+  root.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') { paused = true; stop(); } });
+  root.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') { paused = false; start(); } });
+  root.addEventListener('focusin',  () => { paused = true;  stop(); });
+  root.addEventListener('focusout', () => { paused = false; start(); });
+
+  // Only run while the slideshow is on screen (saves battery and data)
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(entries => {
+      inView = entries[0].isIntersecting;
+      inView ? start() : stop();
+    }, { threshold: 0.35 }).observe(root);
+  } else {
+    inView = true; start();
+  }
+})();
