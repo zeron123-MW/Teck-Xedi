@@ -506,10 +506,10 @@ section{padding:120px 0;}
    PHOTO SIZE FIX — keeps photo frames from filling the screen
    ========================================================= */
 
-/* Founder slideshow: max 420px wide, and never taller than ~70% of the screen */
+/* Founder slideshow: max 420px wide, and never taller than ~30% of the screen */
 .founder-photo{
   position:relative;
-  width:min(100%, 420px, 56vh);
+  width:min(50%, 220px, 56vh);
   margin-inline:auto;
 }
 .founder-slideshow{width:100%;}
