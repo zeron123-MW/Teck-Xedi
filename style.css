@@ -502,3 +502,26 @@ section{padding:120px 0;}
   .hero-panel-card{animation:none;}
   .founder-slideshow .slide{transform:none;transition:opacity .3s linear;}
 }
+/* =========================================================
+   PHOTO SIZE FIX — keeps photo frames from filling the screen
+   ========================================================= */
+
+/* Founder slideshow: max 420px wide, and never taller than ~70% of the screen */
+.founder-photo{
+  position:relative;
+  width:min(100%, 420px, 56vh);
+  margin-inline:auto;
+}
+.founder-slideshow{width:100%;}
+
+/* Contact page portrait: same idea, a little smaller */
+.contact-hero-visual{
+  width:min(100%, 380px, 50vh);
+  margin-inline:auto;
+}
+
+/* Phones: slightly smaller and centered */
+@media (max-width:900px){
+  .founder-photo{width:min(100%, 340px, 52vh);}
+  .contact-hero-visual{width:min(100%, 300px, 46vh); margin-top:24px;}
+}
