@@ -453,3 +453,52 @@ section{padding:120px 0;}
   .support-grid{grid-template-columns:1fr;}
   .support-box{padding:30px 22px;}
 }
+/* =========================================================
+   HERO PANEL (replaces the hero photos)
+   ========================================================= */
+.hero-panel{display:flex;justify-content:flex-end;}
+.hero-panel-card{
+  width:100%;max-width:420px;padding:30px;border-radius:20px;
+  background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.16);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:0 30px 60px -25px rgba(0,0,0,0.55);
+  animation:panelFloat 7s ease-in-out infinite;
+}
+.hero-panel-label{color:var(--gold);font-weight:700;font-size:12px;letter-spacing:0.08em;margin-bottom:18px;}
+.hero-panel-card ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:20px;}
+.hero-panel-card li{display:flex;gap:16px;align-items:flex-start;}
+.hp-num{font-family:'Montserrat',sans-serif;font-weight:800;color:var(--gold);font-size:15px;padding-top:2px;}
+.hero-panel-card strong{display:block;color:#fff;font-family:'Montserrat',sans-serif;font-size:18px;margin-bottom:2px;}
+.hero-panel-card li span:not(.hp-num){color:rgba(255,255,255,0.7);font-size:14.5px;line-height:1.5;}
+@keyframes panelFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@media (max-width:900px){.hero-panel{justify-content:flex-start;margin-top:28px;}}
+
+/* =========================================================
+   FOUNDER SLIDESHOW: one photo pops in at a time
+   ========================================================= */
+.founder-slideshow{
+  position:relative;aspect-ratio:4/5;border-radius:var(--radius);overflow:hidden;
+  box-shadow:var(--shadow);background:linear-gradient(135deg,var(--navy),var(--navy-deep));
+}
+.founder-slideshow .slide{
+  position:absolute;inset:0;margin:0;opacity:0;visibility:hidden;
+  transform:scale(0.88) translateY(24px);
+  transition:opacity .6s var(--ease), transform .8s cubic-bezier(.34,1.56,.64,1), visibility 0s linear .8s;
+}
+.founder-slideshow .slide.is-active{
+  opacity:1;visibility:visible;transform:none;z-index:2;
+  transition:opacity .6s var(--ease), transform .8s cubic-bezier(.34,1.56,.64,1), visibility 0s;
+}
+.founder-slideshow .slide img{width:100%;height:100%;object-fit:cover;object-position:center 25%;display:block;}
+.slide-dots{position:absolute;left:0;right:0;bottom:14px;z-index:3;display:flex;justify-content:center;gap:8px;}
+.slide-dots button{
+  position:relative;width:9px;height:9px;padding:0;border:none;border-radius:999px;
+  background:rgba(255,255,255,0.55);transition:width .3s var(--ease), background .3s var(--ease);
+}
+.slide-dots button::after{content:'';position:absolute;inset:-10px;} /* bigger tap area on phones */
+.slide-dots button.active{width:26px;background:var(--gold);}
+.slide-dots button:focus-visible{outline:3px solid var(--gold);outline-offset:3px;}
+@media (prefers-reduced-motion:reduce){
+  .hero-panel-card{animation:none;}
+  .founder-slideshow .slide{transform:none;transition:opacity .3s linear;}
+}
