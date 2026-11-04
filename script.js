@@ -1,211 +1,217 @@
-// ============================================================
-// Teck Xedi — shared behaviour across all pages
-// ============================================================
+/* ==========================================================
+   TECK XEDI — shared behaviour (v2)
+   No libraries. Every feature fails safely if its markup is absent.
+   ========================================================== */
+(function () {
+  'use strict';
 
-// --- Navbar scroll state + mobile toggle ---
-const nav = document.querySelector('.nav');
-const navToggle = document.querySelector('.nav-toggle');
-const navLinks = document.querySelector('.nav-links');
+  var root = document.documentElement;
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-window.addEventListener('scroll', () => {
-  if (!nav) return;
-  nav.classList.toggle('scrolled', window.scrollY > 12);
-}, { passive: true });
+  /* ---------- Navbar: scroll shadow + mobile menu ---------- */
+  var nav = document.querySelector('.nav');
+  var toggle = document.querySelector('.nav-toggle');
+  var links = document.querySelector('.nav-links');
 
-if (navToggle && navLinks) {
-  navToggle.addEventListener('click', () => {
-    const open = navLinks.classList.toggle('open');
-    navToggle.setAttribute('aria-expanded', open);
+  var progressEl = document.querySelector('.progress');
+  var ticking = false;
+  function onScroll() {
+    if (nav) nav.classList.toggle('scrolled', window.scrollY > 8);
+    if (progressEl) {
+      var max = root.scrollHeight - root.clientHeight;
+      progressEl.style.transform = 'scaleX(' + (max > 0 ? Math.min(window.scrollY / max, 1) : 0) + ')';
+    }
+    ticking = false;
+  }
+  onScroll();
+  window.addEventListener('scroll', function () {
+    if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
+  }, { passive: true });
+
+  function setMenu(open) {
+    if (!links || !toggle) return;
+    links.classList.toggle('open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  }
+  if (toggle && links) {
+    toggle.addEventListener('click', function () {
+      setMenu(!links.classList.contains('open'));
+    });
+    links.addEventListener('click', function (e) {
+      if (e.target.closest('a')) setMenu(false);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') setMenu(false);
+    });
+    document.addEventListener('click', function (e) {
+      if (nav && !nav.contains(e.target)) setMenu(false);
+    });
+  }
+
+  /* ---------- Dark mode (initial theme is set by a tiny script in <head>) ---------- */
+  var themeBtn = document.querySelector('.theme-toggle');
+  function setTheme(t) {
+    root.setAttribute('data-theme', t);
+    try { localStorage.setItem('tx-theme', t); } catch (e) {}
+    if (themeBtn) themeBtn.setAttribute('aria-pressed', String(t === 'dark'));
+  }
+  if (themeBtn) {
+    themeBtn.setAttribute('aria-pressed', String(root.getAttribute('data-theme') === 'dark'));
+    themeBtn.addEventListener('click', function () {
+      setTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    });
+  }
+
+  /* ---------- Scroll reveal ---------- */
+  var items = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
+  if ('IntersectionObserver' in window && !reduceMotion) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    items.forEach(function (el) { io.observe(el); });
+  } else {
+    items.forEach(function (el) { el.classList.add('in'); });
+  }
+
+  /* ---------- Logo fallback: show a text wordmark if assets/logo.jpg is missing ---------- */
+  document.querySelectorAll('.brand img').forEach(function (img) {
+    function swap() {
+      var s = document.createElement('span');
+      s.className = 'wordmark';
+      s.innerHTML = 'Teck<b>Xedi</b>';
+      img.replaceWith(s);
+    }
+    if (img.complete && img.naturalWidth === 0) swap();
+    else img.addEventListener('error', swap);
   });
-  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
-    navLinks.classList.remove('open');
-  }));
-}
 
-// --- Dark mode ---
-const themeToggle = document.querySelector('.theme-toggle');
-const root = document.documentElement;
-function applyTheme(t) {
-  if (t === 'dark') root.setAttribute('data-theme', 'dark');
-  else root.setAttribute('data-theme', 'light');
-}
-try {
-  const saved = localStorage.getItem('tx-theme');
-  if (saved) applyTheme(saved);
-  else if (window.matchMedia('(prefers-color-scheme: dark)').matches) applyTheme('dark');
-} catch (e) {}
+  /* ---------- Founder slideshow: photos pop in one at a time, then loop ---------- */
+  (function () {
+    var box = document.getElementById('founder-slideshow');
+    if (!box) return;
 
-if (themeToggle) {
-  themeToggle.addEventListener('click', () => {
-    const isDark = root.getAttribute('data-theme') === 'dark';
-    applyTheme(isDark ? 'light' : 'dark');
-    try { localStorage.setItem('tx-theme', isDark ? 'light' : 'dark'); } catch (e) {}
-  });
-}
+    var dotsWrap = box.querySelector('.dots');
+    var INTERVAL = 3500; // milliseconds each photo stays on screen
+    var slides = Array.prototype.slice.call(box.querySelectorAll('.slide'));
+    var index = 0, timer = null, inView = false, paused = false;
 
-// --- Scroll reveal ---
-const revealEls = document.querySelectorAll('.reveal');
-if ('IntersectionObserver' in window) {
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('in');
-        io.unobserve(entry.target);
+    function show(i) {
+      if (!slides.length) return;
+      index = (i + slides.length) % slides.length;
+      slides.forEach(function (s, k) { s.classList.toggle('is-active', k === index); });
+      Array.prototype.forEach.call(dotsWrap.children, function (d, k) {
+        d.classList.toggle('active', k === index);
+        d.setAttribute('aria-current', k === index ? 'true' : 'false');
+      });
+    }
+    function buildDots() {
+      dotsWrap.innerHTML = '';
+      slides.forEach(function (s, k) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.setAttribute('aria-label', 'Show photo ' + (k + 1) + ' of ' + slides.length);
+        b.addEventListener('click', function () { show(k); restart(); });
+        dotsWrap.appendChild(b);
+      });
+      dotsWrap.style.display = slides.length > 1 ? 'flex' : 'none';
+    }
+    function stop() { clearInterval(timer); timer = null; }
+    function start() {
+      if (timer || paused || !inView || slides.length < 2) return;
+      timer = setInterval(function () { show(index + 1); }, INTERVAL);
+    }
+    function restart() { stop(); start(); }
+
+    function dropSlide(slide) {
+      slides = slides.filter(function (s) { return s !== slide; });
+      slide.remove();
+      buildDots(); show(index); restart();
+    }
+    slides.slice().forEach(function (slide) {
+      var img = slide.querySelector('img');
+      if (!img) return;
+      if (img.complete && img.naturalWidth === 0) {
+        slides = slides.filter(function (s) { return s !== slide; });
+        slide.remove();
+      } else {
+        img.addEventListener('error', function () { dropSlide(slide); });
       }
     });
-  }, { threshold: 0.15 });
-  revealEls.forEach(el => io.observe(el));
-} else {
-  revealEls.forEach(el => el.classList.add('in'));
-}
+    buildDots();
+    show(0);
 
-// --- Hero parallax (three portrait frames at different speeds) ---
-const parallaxLayers = document.querySelectorAll('[data-parallax]');
-if (parallaxLayers.length && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-  let ticking = false;
-  window.addEventListener('scroll', () => {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(() => {
-      const y = window.scrollY;
-      parallaxLayers.forEach(layer => {
-        const speed = parseFloat(layer.dataset.parallax) || 0.2;
-        layer.style.transform = `translateY(${y * speed}px)`;
-      });
-      ticking = false;
-    });
-  }, { passive: true });
-}
+    box.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') { paused = true; stop(); } });
+    box.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') { paused = false; start(); } });
+    box.addEventListener('focusin', function (e) { if (e.target.matches(':focus-visible')) { paused = true; stop(); } });
+    box.addEventListener('focusout', function () { paused = false; start(); });
 
-// --- Photo slots ---
-// Photos are now fixed image files (assets/founder-main.jpg, assets/product-1.jpg, etc).
-// Only whoever can push files to the project's GitHub repo can change them —
-// visitors cannot upload or alter photos on the live site.
-document.querySelectorAll('.upload-slot.photo-fixed img').forEach(img => {
-  if (img.complete && img.naturalWidth > 0) img.closest('.upload-slot').classList.add('has-image');
-  img.addEventListener('load', () => img.closest('.upload-slot').classList.add('has-image'));
-});
-
-// --- Product filter bar (Products page) ---
-const filterBar = document.querySelector('.filter-bar');
-if (filterBar) {
-  const buttons = filterBar.querySelectorAll('button');
-  const cards = document.querySelectorAll('.product-card');
-  buttons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      buttons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const cat = btn.dataset.filter;
-      cards.forEach(card => {
-        const show = cat === 'all' || card.dataset.category === cat;
-        card.style.display = show ? '' : 'none';
-      });
-    });
-  });
-}
-
-// --- Learn More expand (Products page) ---
-document.querySelectorAll('.learn-more').forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    e.preventDefault();
-    const card = btn.closest('.product-card');
-    if (card) card.classList.toggle('expanded');
-    btn.textContent = card && card.classList.contains('expanded') ? '' : '';
-    const label = btn.querySelector('.lm-text');
-    if (label) label.textContent = card.classList.contains('expanded') ? 'Show less' : 'Learn More';
-  });
-});
-
-// --- Contact form (static site: no backend, so hand off to mailto) ---
-const contactForm = document.querySelector('#contact-form');
-if (contactForm) {
-  contactForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const name = contactForm.querySelector('#cf-name').value.trim();
-    const email = contactForm.querySelector('#cf-email').value.trim();
-    const type = contactForm.querySelector('#cf-type').value;
-    const message = contactForm.querySelector('#cf-message').value.trim();
-    const body = encodeURIComponent(
-      `Name: ${name}\nEmail: ${email}\nType of support: ${type}\n\n${message}`
-    );
-    window.location.href = `mailto:gilbertkatuwa2006@gmail.com?subject=${encodeURIComponent('Teck Xedi — ' + type)}&body=${body}`;
-  });
-}
-
-// --- Footer year ---
-document.querySelectorAll('.js-year').forEach(el => { el.textContent = new Date().getFullYear(); });
-// --- Founder photo slideshow: one photo pops in at a time, then loops ---
-(function () {
-  const root = document.getElementById('founder-slideshow');
-  if (!root) return;
-
-  const dotsWrap = root.querySelector('.slide-dots');
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const INTERVAL = 3500; // milliseconds each photo stays on screen
-  let slides = Array.from(root.querySelectorAll('.slide'));
-  let index = 0, timer = null, inView = false, paused = false;
-
-  function show(i) {
-    if (!slides.length) return;
-    index = (i + slides.length) % slides.length;
-    slides.forEach((s, k) => s.classList.toggle('is-active', k === index));
-    Array.from(dotsWrap.children).forEach((d, k) => {
-      d.classList.toggle('active', k === index);
-      d.setAttribute('aria-current', k === index ? 'true' : 'false');
-    });
-  }
-
-  function buildDots() {
-    dotsWrap.innerHTML = '';
-    slides.forEach((s, k) => {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.setAttribute('aria-label', 'Show photo ' + (k + 1) + ' of ' + slides.length);
-      b.addEventListener('click', () => { show(k); restart(); });
-      dotsWrap.appendChild(b);
-    });
-    dotsWrap.style.display = slides.length > 1 ? 'flex' : 'none';
-  }
-
-  function stop() { clearInterval(timer); timer = null; }
-  function start() {
-    if (reduceMotion || timer || paused || !inView || slides.length < 2) return;
-    timer = setInterval(() => show(index + 1), INTERVAL);
-  }
-  function restart() { stop(); start(); }
-
-  // If a photo file is missing or misnamed, skip it instead of showing a broken image
-  function dropSlide(slide) {
-    slides = slides.filter(s => s !== slide);
-    slide.remove();
-    buildDots(); show(index); restart();
-  }
-  slides.slice().forEach(slide => {
-    const img = slide.querySelector('img');
-    if (!img) return;
-    if (img.complete && img.naturalWidth === 0) {
-      slides = slides.filter(s => s !== slide);
-      slide.remove();
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        inView = entries[0].isIntersecting;
+        if (inView) start(); else stop();
+      }, { threshold: 0.35 }).observe(box);
     } else {
-      img.addEventListener('error', () => dropSlide(slide));
+      inView = true; start();
     }
-  });
-  buildDots();
-  show(0);
+  })();
 
-  // Pause while someone hovers (mouse) or focuses the slideshow
-  root.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') { paused = true; stop(); } });
-  root.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') { paused = false; start(); } });
-  root.addEventListener('focusin',  () => { paused = true;  stop(); });
-  root.addEventListener('focusout', () => { paused = false; start(); });
-
-  // Only run while the slideshow is on screen (saves battery and data)
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver(entries => {
-      inView = entries[0].isIntersecting;
-      inView ? start() : stop();
-    }, { threshold: 0.35 }).observe(root);
-  } else {
-    inView = true; start();
+  /* ---------- Products: category filter ---------- */
+  var bar = document.querySelector('.filters');
+  if (bar) {
+    var btns = Array.prototype.slice.call(bar.querySelectorAll('button'));
+    var cards = Array.prototype.slice.call(document.querySelectorAll('[data-category]'));
+    var count = document.querySelector('.filter-count');
+    btns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        btns.forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+        b.setAttribute('aria-pressed', 'true');
+        var f = b.getAttribute('data-filter'), n = 0;
+        var bento = document.getElementById('bento');
+        if (bento) bento.classList.toggle('is-filtered', f !== 'all');
+        cards.forEach(function (c) {
+          var show = f === 'all' || c.getAttribute('data-category') === f;
+          c.hidden = !show;
+          if (show) n++;
+        });
+        if (count) count.textContent = n + (n === 1 ? ' product' : ' products');
+      });
+    });
   }
+
+  /* ---------- Contact form: static site, so it opens a pre-filled email ---------- */
+  var form = document.getElementById('contact-form');
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      function val(id) { return form.querySelector(id).value.trim(); }
+      var type = val('#cf-type');
+      var body = encodeURIComponent(
+        'Name: ' + val('#cf-name') + '\nEmail: ' + val('#cf-email') +
+        '\nType of support: ' + type + '\n\n' + val('#cf-message')
+      );
+      window.location.href = 'mailto:gilbertkatuwa2006@gmail.com?subject=' +
+        encodeURIComponent('Teck Xedi — ' + type) + '&body=' + body;
+    });
+  }
+
+  /* ---------- Card spotlight: soft gold glow follows the mouse ---------- */
+  document.querySelectorAll('.card, .p-card, .tile-cta').forEach(function (el) {
+    el.addEventListener('pointermove', function (e) {
+      if (e.pointerType !== 'mouse') return;
+      var r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      el.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
+  });
+
+  /* ---------- Footer year ---------- */
+  document.querySelectorAll('.js-year').forEach(function (el) {
+    el.textContent = new Date().getFullYear();
+  });
 })();
