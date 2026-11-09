@@ -7,6 +7,7 @@
 
   var root = document.documentElement;
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  root.classList.add('js-ready'); // reveal animations only hide content after this point
 
   /* ---------- Navbar: scroll shadow + mobile menu ---------- */
   var nav = document.querySelector('.nav');
