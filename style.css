@@ -348,9 +348,9 @@ ul,ol{margin:0;padding:0}
 .footer-social a:hover{background:var(--gold);color:var(--navy);border-color:var(--gold)}
 .footer-bottom{margin-top:52px;padding-top:24px;border-top:1px solid rgba(255,255,255,.12);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13.5px;color:rgba(255,255,255,.56)}
 
-/* ---------- Scroll reveal (only hides content when JavaScript is running) ---------- */
-.js .reveal{opacity:0;transform:translateY(24px);transition:opacity .75s var(--ease),transform .75s var(--ease)}
-.js .reveal.in{opacity:1;transform:none}
+/* ---------- Scroll reveal (content is hidden ONLY after script.js has started, so a failed script never leaves a blank page) ---------- */
+.js-ready .reveal{opacity:0;transform:translateY(24px);transition:opacity .75s var(--ease),transform .75s var(--ease)}
+.js-ready .reveal.in{opacity:1;transform:none}
 
 /* ---------- Responsive ---------- */
 @media (max-width:1024px){
@@ -403,5 +403,35 @@ ul,ol{margin:0;padding:0}
   .js .rise,.path::before,.pill .dot{animation:none}
   .marquee-track{animation:none}
   .slide{transform:none;transition:opacity .3s linear}
-  .js .reveal{opacity:1;transform:none;transition:none}
+  .js-ready .reveal{opacity:1;transform:none;transition:none}
+}
+
+/* =========================================================
+   FOUNDER FRAME FIX — photo and quote sit together inside
+   one even gold line (photo arch and outline are concentric)
+   ========================================================= */
+.founder-media{
+  width:min(100%,420px);
+  margin-inline:auto;
+  display:grid;
+  gap:14px;
+  padding:14px;
+  border:2px solid var(--gold);
+  border-radius:50% 50% 32px 32px / 210px 210px 32px 32px;
+}
+.founder-media::before{display:none}
+.slideshow{
+  border-radius:50% 50% 18px 18px / 194px 194px 18px 18px;
+  box-shadow:none;
+}
+.quote-card{
+  position:static;
+  max-width:none;
+  margin:0;
+  box-shadow:none;
+  border-radius:18px 18px 16px 16px;
+}
+@media (max-width:640px){
+  .founder-media{border-radius:50% 50% 28px 28px / 170px 170px 28px 28px}
+  .slideshow{border-radius:50% 50% 16px 16px / 154px 154px 16px 16px}
 }
