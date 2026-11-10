@@ -435,3 +435,27 @@ ul,ol{margin:0;padding:0}
   .founder-media{border-radius:50% 50% 28px 28px / 170px 170px 28px 28px}
   .slideshow{border-radius:50% 50% 16px 16px / 154px 154px 16px 16px}
 }
+/* =========================================================
+   HERO PHOTO BACKGROUND (home page only)
+   Put your photo at assets/hero.jpg. If that file is missing,
+   the navy gradient shows instead, so nothing ever breaks.
+   To make the photo brighter, lower the three .94 / .82 / .58
+   numbers. To make text safer, raise them.
+   ========================================================= */
+.hero{
+  background:
+    radial-gradient(900px 540px at 90% 6%, rgba(245,180,0,.14), transparent 60%),
+    linear-gradient(90deg, rgba(6,23,51,.94) 0%, rgba(6,23,51,.82) 42%, rgba(6,23,51,.58) 100%),
+    url("assets/hero.jpg") center / cover no-repeat,
+    linear-gradient(160deg, var(--navy) 0%, var(--navy-deep) 100%);
+}
+.hero::after{opacity:.5}
+.hero .hero-panel{background:rgba(6,23,51,.55)}
+@media (max-width:900px){
+  .hero{
+    background:
+      linear-gradient(180deg, rgba(6,23,51,.90) 0%, rgba(6,23,51,.80) 55%, rgba(6,23,51,.92) 100%),
+      url("assets/hero.jpg") 70% center / cover no-repeat,
+      linear-gradient(160deg, var(--navy) 0%, var(--navy-deep) 100%);
+  }
+}
